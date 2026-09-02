@@ -1,6 +1,6 @@
 ---
 name: security-review
-description: Revisa segurança de FDD, código, contratos, dependências, autenticação, autorização, input, output, segredos e dados de aluno; Neo reporta e valida sem implementar a correção.
+description: Revisa segurança de FDD, código, contratos, dependências, autenticação, autorização, input, output, segredos e dados sensíveis; Neo reporta e valida sem implementar a correção.
 ---
 
 # Adaptador da skill security-review

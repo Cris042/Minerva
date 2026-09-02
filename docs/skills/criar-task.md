@@ -40,7 +40,7 @@ Quando informações não estiverem nos documentos, fazer **uma pergunta por vez
 6. Derivar critérios de aceite do PRD/FDD no fluxo completo ou validações mecânicas proporcionais na via rápida, sem criar significado novo.
 7. Derivar testes por comportamento, invariantes e endpoints. Todo endpoint exige integração idempotente com evidência definida na ADR de testes.
 8. Definir evidências objetivas de implementação, testes, pipeline e documentação.
-9. Mapear notas Obsidian obrigatórias, registrar cada pendência em `docs/continuidade.md` com origem, destino, responsável e prazo máximo de 24 horas, e apontar riscos ou `❓ LACUNA`.
+9. Mapear notas Obsidian obrigatórias, registrar cada pendência em `docs/pendencias-obsidian.md` com origem, destino, responsável e prazo máximo de 24 horas, e apontar riscos ou `❓ LACUNA`.
 
 ## Procedimento
 
@@ -48,7 +48,7 @@ Quando informações não estiverem nos documentos, fazer **uma pergunta por vez
 2. Procurar task equivalente na base e determinar o próximo `T-NNN` sem duplicar trabalho.
 3. Conduzir a coleta apenas para dados ausentes.
 4. Executar as checagens de consistência.
-5. Renderizar exatamente o molde Markdown, registrar a pendência correspondente em `docs/continuidade.md` e sincronizar em `<BASE>/tasks/t-NNN-<slug>.md` no prazo da regra 3.
+5. Renderizar exatamente o molde Markdown, registrar a pendência correspondente em `docs/pendencias-obsidian.md` e sincronizar em `<BASE>/tasks/t-NNN-<slug>.md` no prazo da regra 3.
 6. Perguntar se o usuário deseja exportação JSON. Só exportar se solicitado, com chaves em inglês, valores textuais em pt-BR e sem campos vazios.
 
 ## Checagens de consistência

@@ -18,7 +18,7 @@ A origem consultada não declarou licença no arquivo da skill, e não foi encon
 
 ## Responsabilidade e participantes
 
-- **Batman:** orquestrar a cerimônia, preparar o mesmo brief para todos, despachar os pareceres, controlar no máximo uma tréplica e devolver decisões ao usuário. Não escrever arquivos nem emitir parecer especialista.
+- **Oráculo:** orquestrar a cerimônia, preparar o mesmo brief para todos, despachar os pareceres, controlar no máximo uma tréplica e devolver decisões ao usuário. Não escrever arquivos nem emitir parecer especialista.
 - **Yoda:** avaliar arquitetura, fronteiras, aderência a HLD/ADRs, decisões pendentes, domínio e risco de overengineering.
 - **Patrick Jane:** avaliar critérios verificáveis, matriz de testes, invariantes, regressão, idempotência e evidências.
 - **Neo:** avaliar superfície de ataque, dados sensíveis, permissões, input/output, dependências e TCs de segurança.
@@ -66,7 +66,7 @@ Aplicar os gatilhos e registrar uma das conclusões:
 
 ### 2. Preparar um brief comum
 
-Batman preparar um único brief, suficiente e proporcional ao épico, contendo:
+Oráculo preparar um único brief, suficiente e proporcional ao épico, contendo:
 
 - objetivo, escopo conhecido e exclusões;
 - futuras tasks ou capacidades previstas, ainda sem fingir que são tasks canônicas;
@@ -95,7 +95,7 @@ Não usar estimativa de tempo, modelo específico, quantidade fixa de arquivos o
 
 ### 4. Confrontar divergências
 
-Batman listar concordâncias e divergências sem escolher silenciosamente entre especialistas.
+Oráculo listar concordâncias e divergências sem escolher silenciosamente entre especialistas.
 
 - Aplicar regras do projeto quando elas resolverem objetivamente o conflito.
 - Permitir no máximo uma rodada de tréplica, somente com os agentes envolvidos e o ponto conflitante completo.
@@ -122,7 +122,7 @@ Não criar identificador `T-NNN` nesta etapa. A task canônica só é criada dep
 
 ### 6. Registrar quando houver épico real
 
-Ao executar a skill para um épico real, seguir `docs/skills/atualizar-obsidian.md` e registrar o refinamento na nota do épico em `<BASE>/epicos/e-NNN-<slug>.md`, criando a pasta se necessário. Se uma rodada complementar alterar task canônica já existente, atualizar também a nota correspondente em `<BASE>/tasks/t-NNN-<slug>.md` e seu histórico. Como o Batman não escreve arquivos, ele delega essa escrita a um agente na responsabilidade de planejar/revisar e só consolida depois de receber e conferir os caminhos escritos.
+Ao executar a skill para um épico real, seguir `docs/skills/atualizar-obsidian.md` e registrar o refinamento na nota do épico em `<BASE>/epicos/e-NNN-<slug>.md`, criando a pasta se necessário. Se uma rodada complementar alterar task canônica já existente, atualizar também a nota correspondente em `<BASE>/tasks/t-NNN-<slug>.md` e seu histórico. Como o Oráculo não escreve arquivos, ele delega essa escrita a um agente na responsabilidade de planejar/revisar e só consolida depois de receber e conferir os caminhos escritos.
 
 Não criar nota de task antecipada para uma futura task ainda inexistente. A criação ou edição desta própria skill exige somente a nota `<BASE>/skills/refinar-task.md`; não criar nota fictícia de épico ou task.
 

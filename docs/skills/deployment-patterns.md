@@ -48,7 +48,7 @@ Adaptada da skill `deployment-patterns` do [mclovin137/TGM2](https://github.com/
 - Backup e restore foram executados quando dados participam do risco.
 - Logs estruturados não expõem PII ou segredos.
 - Cotas do free tier têm medição e alerta antes do esgotamento.
-- Nota, atividade e matrícula não ficam sujeitas a perda para manter custo zero.
+- Dados críticos, cuja perda ou corrupção seja irreversível para o usuário final e que sejam definidos pela aplicação consumidora em ADR, não ficam sujeitos a perda para manter custo zero.
 
 ## Plano de entrega
 

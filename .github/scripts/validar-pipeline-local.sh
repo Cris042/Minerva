@@ -11,7 +11,7 @@ printf 'Workflows detectados para validação local:\n'
 printf '%s\n' "${workflows[@]}"
 
 jq empty .claude/settings.json .codex/hooks.json
-jq -e '.hooks.SessionStart == null and .hooks.PreToolUse == null and .hooks.PostToolUse == null' .claude/settings.json >/dev/null
+jq -e '.hooks.SessionStart == null and (.hooks.PreToolUse | type) == "array" and any(.hooks.PreToolUse[]; .matcher == "Write|Edit|NotebookEdit|Bash" and any(.hooks[]; .type == "command" and (.command | endswith("guarda-orquestrador.sh")))) and .hooks.PostToolUse == null' .claude/settings.json >/dev/null
 jq -e '.hooks.SessionStart == null and .hooks.PreToolUse == null and .hooks.PostToolUse == null' .codex/hooks.json >/dev/null
 
 while IFS= read -r -d '' arquivo; do

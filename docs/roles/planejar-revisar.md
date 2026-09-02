@@ -42,7 +42,7 @@ Segunda das três responsabilidades da regra de ferro 4. Planejar e revisar são
 |---|---|
 | [yoda](../agentes/yoda.md) | Arquitetura — ADR, camadas, fronteiras de módulo, corte de escopo |
 | [patrick-jane](../agentes/patrick-jane.md) | QA — matriz de casos, idempotência, verificação da evidência |
-| [neo](../agentes/neo.md) | Segurança — segredos, autenticação, validação de entrada, esteira, dependências |
+| [neo](../agentes/neo.md) | Investigação de sistemas/redes e segurança contextual — localiza falhas por evidência, segredos, autenticação, input/output, esteira e dependências |
 
 Três agentes, três recortes que não se sobrepõem. Um PR grande costuma passar pelos três, cada um emitindo o próprio parecer; **especialidade não é hierarquia**, e desacordo que não se resolve sobe para o usuário.
 

@@ -25,7 +25,7 @@ jobs:
             jq empty "$arquivo"
           done < <(find .claude .codex -type f -name '*.json' -print0)
           jq -e '.hooks.SessionStart == null' .claude/settings.json >/dev/null
-          jq -e '.hooks.PreToolUse == null and .hooks.PostToolUse == null' .claude/settings.json >/dev/null
+          jq -e '(.hooks.PreToolUse | type) == "array" and any(.hooks.PreToolUse[]; .matcher == "Write|Edit|NotebookEdit|Bash" and any(.hooks[]; .type == "command" and (.command | endswith("guarda-orquestrador.sh")))) and .hooks.PostToolUse == null' .claude/settings.json >/dev/null
           jq -e '.hooks.SessionStart == null' .codex/hooks.json >/dev/null
           jq -e '.hooks.PreToolUse == null and .hooks.PostToolUse == null' .codex/hooks.json >/dev/null
 
@@ -62,7 +62,7 @@ jobs:
           for arquivo in docs/agentes/*.md; do
             nome="$(basename "$arquivo" .md)"
             [ "$nome" = 'README' ] && continue
-            [ "$nome" = 'batman' ] && continue
+            [ "$nome" = 'oraculo' ] && continue
             test -f ".claude/agents/$nome.md"
           done
           for arquivo in .claude/agents/*.md; do
@@ -152,6 +152,12 @@ jobs:
             printf 'Há referência a artefato de continuidade substituído.\n' >&2
             exit 1
           fi
+
+      - name: Validar forma de docs/continuidade.md
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/verificar-continuidade.py docs/continuidade.md
 
       - name: Validar referências Markdown internas
         shell: bash

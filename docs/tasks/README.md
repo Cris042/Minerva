@@ -8,4 +8,4 @@ Tasks seguem o fluxo de `docs/rules.md`. A numeração formal começa em `T-001`
 |---|---|---|---|
 | Governança em curso | Migração da continuidade, sincronização documental e catálogo de playbooks | Via rápida | Em andamento; ver `docs/continuidade.md` |
 
-Não há task de produto formal, nem backlog priorizado, registrado neste momento.
+Não há task de produto formal nem backlog de produto registrado neste momento.

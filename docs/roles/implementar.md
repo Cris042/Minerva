@@ -22,7 +22,7 @@ Terceira das três responsabilidades da regra de ferro 4. Implementar é produzi
 - Escrever o **teste de integração** de todo endpoint tocado: idempotente, gerando as evidências definidas pela ADR de testes (regra de ferro 7).
 - Construir e manter os dois pipelines (regra 8) e o workflow de deploy aprovado, sem alterar recursos externos fora da task autorizada.
 - Monitorar o consumo do free tier e avisar antes de encostar no limite (regra 5).
-- Registrar imediatamente em `docs/continuidade.md` a pendência de todo artefato-gatilho tocado e sincronizar a base Obsidian em até 24 horas, ou antes por pedido do usuário (regra 3, ver [atualizar-obsidian](../skills/atualizar-obsidian.md)).
+- Registrar imediatamente em `docs/pendencias-obsidian.md` a pendência de todo artefato-gatilho tocado e sincronizar a base Obsidian em até 24 horas, ou antes por pedido do usuário (regra 3, ver [atualizar-obsidian](../skills/atualizar-obsidian.md)).
 - Abrir o PR com link para task e PRD, evidências anexadas e a declaração dos caminhos escritos na base.
 - Responder ao review e corrigir o que a auditoria apontar.
 

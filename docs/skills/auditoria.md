@@ -43,11 +43,12 @@ Bloquear se faltar artefato obrigatório do caminho classificado, se a exceção
 - Todo arquivo alterado pertence ao escopo ou tem autorização documental explícita.
 - Os critérios de aceite têm evidência reproduzível.
 - Todo endpoint possui teste de integração idempotente, com evidência publicada pelo pipeline de casos de teste conforme a ADR aplicável.
+- Toda mudança que crie endpoint ou regra de domínio possui Relatório de evidência TDD com as colunas RED/GREEN/REFACTOR.
 - Fluxos críticos, falhas, bordas, autorização, concorrência e invariantes aplicáveis estão cobertos.
 - Não há segredo, dado sensível em log, vulnerabilidade relevante conhecida ou dependência não analisada.
 - Migration, quando houver, tem ida e volta testadas e nota Obsidian por objeto DDL.
 - Código e documentação de comportamento mudaram juntos.
-- As notas Obsidian estão sincronizadas e conferidas, ou cada pendência tem origem, destino, responsável e prazo dentro de 24 horas em `docs/continuidade.md`; pendência vencida bloqueia conclusão e trabalho dependente.
+- As notas Obsidian estão sincronizadas e conferidas, ou cada pendência tem origem, destino, responsável e prazo de criação dentro de 24 horas em `docs/pendencias-obsidian.md`; reprazo posterior só vale nos termos do regime de reprazo da regra 3, com decisão do usuário, data e motivo registrados. Pendência vencida bloqueia conclusão e trabalho dependente.
 - O pipeline de review e o pipeline de execução de casos de teste estão verdes.
 - Publicação e deploy devem aderir ao workflow aprovado e à regra de custo financeiro zero.
 

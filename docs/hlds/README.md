@@ -12,5 +12,4 @@ Este diretório é o espelho versionado; a cópia canônica de cada HLD fica na 
 
 | HLD | Título | Contexto | Status |
 |---|---|---|---|
-
-Nenhum HLD registrado.
+| [Neo: investigação de sistemas e redes](hld-neo-investigacao-sistemas-redes.md) | Separação entre identidade, prompt, TRACE, capabilities, evidência e handoffs | Investigação agnóstica de sistemas e redes | Proposta; revisão independente pendente |

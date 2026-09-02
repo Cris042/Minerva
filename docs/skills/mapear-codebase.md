@@ -45,7 +45,7 @@ Se o usuário delimitar pastas, respeitar esse escopo. Caso contrário, usar a r
 
 ## Estado sem implementação
 
-Se não houver código ou configuração executável, não retornar erro artificial. Relatar somente a governança e a documentação observáveis, declarar que funcionalidades, arquitetura de runtime, stack e testabilidade ainda não podem ser mapeadas e listar o que falta. No estado inicial do projeto Minerva, não inferir stack a partir de `.idea/` nem transformar pendências de decisão em fatos.
+Se não houver código ou configuração executável, não retornar erro artificial. Relatar somente a governança e a documentação observáveis, declarar que funcionalidades, arquitetura de runtime, stack e testabilidade ainda não podem ser mapeadas e listar o que falta. No estado inicial do projeto Minerva, não inferir stack a partir de `.idea/` nem transformar decisões ainda não registradas pela aplicação consumidora em fatos.
 
 ## Formato de saída
 

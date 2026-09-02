@@ -282,33 +282,29 @@ protege uma falha distinta e essa razão está documentada.
 invariante real; o agregado protege suas regras de construção; regras puras recebem dados prontos;
 nenhum objeto concentra responsabilidades incompatíveis; e os testes cobrem os cenários críticos.
 
-### Checklist de revisão — regras de ouro
+### Checklist de revisão — capacidades essenciais
 
-Antes de aceitar um PR tático do motor de busca, verificar:
+Antes de aceitar uma mudança backend, verificar:
 
-1. **Fronteira de responsabilidade clara?**
-   - DAO: só carrega dados e aplica o primeiro gate SQL.
-   - Resolver: orquestra, chama DAO e invoca domain service; nunca calcula ranking ou validação.
-   - Service (domínio): contém regra, invariantes e fórmula; ADR-0007 fica dentro de Ranqueador, não disperso.
-   - Controller: deserializa DTO, chama Actor e serializa a resposta.
-   - **Defeito red flag:** lógica de ranking vazando para Resolver ou Controller.
-2. **VOs com invariante real?** O constructor valida e retorna `error`; o campo interno é privado;
-   tipo nomeado sem invariante só é aceito na fronteira, como `type DoencaID string`.
-3. **Agregado protege invariantes por construção?** `ResultadoBusca` só nasce via
-   `NovoResultadoBusca`; campos internos são privados; o acesso é somente leitura; e a construção
-   valida ordenação, explicabilidade e exclusão de candidatas inválidas.
-4. **Domain services são puros?** Ranqueador e ResolvedorDeSinonimo recebem dados prontos, não
-   carregam do DAO, não fazem consulta, HTTP ou rede e têm testes orientados a casos.
-5. **Entidade com gate como invariante?** `DoencaCandidata.validado` é privado;
-   `NewDoencaCandidataValidada` é o único caminho; não é possível construir o objeto inválido.
-6. **Agregado não é "god object"?** `ResultadoBusca` contém o mínimo necessário; relacionados
-   entram por id ou VO, são somente leitura e são carregados antes.
-7. **Dupla defesa do gate deliberada e documentada?** Gate em SQL para primeira linha e
-   performance (ADR-0006, item 5), gate no domínio para impossibilidade estrutural (cenário QA #10)
-   e comentário que explica a defesa em profundidade.
-8. **Testes de domínio cobrem cenários críticos?** Cenários QA #1, #3, #5, #10 e #11 têm teste de
-   domínio orientado a tabela; testes de integração são isolados de DB/HTTP; e E2E-API em Playwright
-   separa contrato HTTP de testes unitários.
+1. **Fronteira de responsabilidade clara?** A entrada traduz o contrato externo, a orquestração
+   coordena o caso de uso, o domínio concentra regras e invariantes, e a infraestrutura realiza
+   persistência ou integração sem absorver regra de negócio.
+2. **Value objects têm invariante real?** A construção valida o que precisa ser sempre válido; o
+   estado interno não pode ser alterado por caminhos que contornem essa validação.
+3. **O agregado protege invariantes por construção?** Há uma única fábrica ou operação coerente para
+   estados válidos, os relacionados necessários são protegidos, e o agregado não virou um objeto
+   com responsabilidades sem relação.
+4. **Domain services são puros quando a regra permitir?** Recebem dados prontos, não carregam
+   dependências de infraestrutura e não fazem I/O; quando isso não for possível, a dependência e a
+   razão ficam explícitas.
+5. **A direção de dependência aponta para dentro?** Interface e domínio não dependem de detalhes de
+   transporte, persistência ou framework; adaptadores dependem dos contratos internos.
+6. **Gates estão na profundidade correta?** A borda valida forma, a infraestrutura pode filtrar por
+   eficiência e o domínio impede estados estruturalmente inválidos. Toda defesa duplicada protege
+   uma falha distinta e tem motivo documentado.
+7. **A decisão é verificável?** Os testes cobrem invariantes, fluxos de erro, idempotência,
+   concorrência e operações irreversíveis aplicáveis ao contrato; a estratégia de teste é a definida
+   pela aplicação consumidora, sem pressupor linguagem ou ferramenta.
 
 ## B. Contratos de entrada, saída e falha
 

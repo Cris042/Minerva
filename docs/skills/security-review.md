@@ -6,7 +6,10 @@
 
 ## Para o futuro agente
 
-Revisar segurança de FDD, código, dependências, contratos e configurações, especialmente ao tratar autenticação, autorização, input, output, segredos, uploads ou dados de aluno. A revisão pertence a **planejar/revisar**; Neo reporta e valida, mas não implementa a correção.
+Revisar segurança de FDD, código, dependências, contratos e configurações, especialmente ao tratar
+autenticação, autorização, input, output, segredos, uploads, dados sensíveis ou fronteiras de
+confiança. A revisão pertence a **planejar/revisar**; Neo reporta e valida, mas não implementa a
+correção.
 
 ## Origem e licença
 
@@ -14,7 +17,10 @@ Adaptada da skill `security-review` do [mclovin137/TGM2](https://github.com/mclo
 
 ## Prioridade
 
-Começar por nota, atividades e matrícula. Avaliar tanto leitura indevida quanto alteração, exclusão, recalculo, cancelamento, fechamento e ausência de trilha. Tratar todo cliente como hostil.
+Começar pelos ativos e operações de maior impacto identificados no contexto temporário da aplicação.
+Avaliar confidencialidade, integridade, disponibilidade, leitura/alteração/exclusão indevidas,
+operações irreversíveis e ausência de trilha. Tratar toda entrada externa como não confiável sem
+incorporar entidade ou prioridade do domínio à definição permanente da skill.
 
 ## Procedimento
 
@@ -27,7 +33,9 @@ Começar por nota, atividades e matrícula. Avaliar tanto leitura indevida quant
 7. Revisar output e erros contra exposição de PII, segredo, stack, query, versão, caminho ou existência protegida.
 8. Revisar segredos no código, histórico, configuração, artefatos, logs e pipelines.
 9. Para dependência nova ou alterada, acionar `docs/skills/auditar-dependencias.md` e consumir seu relatório read-only. A revisão de segurança avalia o efeito da dependência nos controles e dados, sem repetir o inventário especializado e sem aprovar custo financeiro.
-10. Criar casos de segurança na suíte compartilhada, idempotentes. Todo endpoint recebe no mínimo testes sem credencial, papel errado, ID alheio e entrada maliciosa, usando a ferramenta aprovada e evidência.
+10. Criar casos de segurança na suíte compartilhada, idempotentes. Todo endpoint recebe no mínimo
+    testes sem credencial, identidade/papel incompatível, referência a recurso fora do escopo
+    autorizado e entrada maliciosa, usando a ferramenta aprovada e evidência.
 11. Emitir achados com severidade, evidência, impacto, recomendação e critério de validação.
 
 ## Checklist mínimo

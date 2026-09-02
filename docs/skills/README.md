@@ -25,7 +25,9 @@ Leia a definição correspondente antes de executar uma atividade que se enquadr
 | [gerar-fdd](gerar-fdd.md) | Detalhar o funcionamento interno de uma feature. |
 | [gerar-hld](gerar-hld.md) | Definir a organização, as fronteiras e os contratos do sistema. |
 | [gerar-prd](gerar-prd.md) | Entrevistar e gerar requisitos de uma feature. |
+| [investigar-sistemas-redes](investigar-sistemas-redes.md) | Investigar comunicação end-to-end por TRACE, hipóteses e evidências por camada. |
 | [mapear-codebase](mapear-codebase.md) | Mapear o repositório somente por leitura. |
+| [refinar-prompts](refinar-prompts.md) | Classificar e aprimorar prompts com escopo, limites e estrutura explícitos. |
 | [refinar-task](refinar-task.md) | Refinar um épico antes do primeiro PRD, quando o risco exigir. |
 | [security-review](security-review.md) | Revisar segurança de FDD, código e configuração. |
 | [security-scan](security-scan.md) | Auditar agentes, hooks, skills e integrações de ferramenta. |

@@ -37,7 +37,7 @@ Adaptada da skill `error-handling` do [mclovin137/TGM2](https://github.com/mclov
 
 ## Invariantes de segurança e dados
 
-- Falha parcial não pode violar invariantes de nota, atividade ou matrícula.
+- Falha parcial não pode violar invariantes dos dados críticos definidos pela aplicação consumidora em ADR.
 - Operação não idempotente não recebe retry automático sem chave ou mecanismo equivalente decidido.
 - Mensagem não confirma a existência de recurso que o ator não pode acessar.
 - Fallback nunca transforma falha em sucesso falso nem reduz autorização.

@@ -1,36 +1,25 @@
-# Continuidade operacional
+## Task ativa
 
-**Autor:** Cristóvão Augusto
+Lote 1 de 4 do desafio MAPS: estabelecer governança, registrar a stack e criar a fundação Maven/SQLite, sem implementar domínio, casos de uso, REST ou frontend.
 
 ## Estado atual
 
+Repositório novo em `main`, com a camada de governança derivada do template autorizado. A aplicação será construída nos lotes seguintes com Java 25, Spring Boot, Maven, SQLite embarcado e React.
+
 ## Decisões vigentes
 
+O lote 1 preserva somente governança, ADR de stack, esqueleto Maven, configuração SQLite, schema inicial e teste mínimo de contexto. A ADR-001 registra as decisões tecnológicas já tomadas.
 
-## Evidências
+## Riscos e lacunas
 
-
-## Pendências de sincronização Obsidian
-
-As alterações de governança, agentes, hooks, playbook e task continuam pendentes de sincronização e conferência na base Minerva. Esta tabela é o registro operacional até a sincronização; nenhuma nota é declarada atualizada antes da conferência.
-
-| Origem no repositório | Destino na base Minerva | Responsável | Prazo | Situação |
-|---|---|---|---|---|
-| `docs/rules.md`, `AGENTS.md`, `CLAUDE.md`, hooks, configuração do Codex/Claude e workflow de validação | `regras-de-ferro.md`, nota de governança do template | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| `docs/agentes/neo.md`, `docs/agentes/severino.md` | `agentes/neo.md`, `agentes/severino.md` | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| `docs/playbooks/playbook-backend.md` | `playbooks/playbook-backend.md` | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| Escopo e estado desta task | `tasks/t-002-governanca-controles-e-c4.md` | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| `.github/workflows/dependency-audit.yml`, `.github/scripts/guard-lib-md.sh` e escopo da task 0064 | `tasks/t-0064-auditoria-semanal-de-dependencias-e-higiene.md` | Severino | 2026-08-18T23:59:59-03:00 | sincronizada e conferida em 2026-08-18 |
-| `.claude/settings.json`, `.codex/hooks.json`, `docs/rules.md` e `validar-template.yml` | `governanca/hooks-onboarding-inativos.md` | Severino | 2026-08-18T23:59:59-03:00 | sincronizada e conferida em 2026-08-18 |
-| Autoria declarada, agentes e skills renomeados nesta sessão | notas correspondentes de agentes e skills na base Minerva | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| `.githooks/pre-push` e `.github/scripts/validar-pipeline-local.sh` | `tasks/t-0064-auditoria-semanal-de-dependencias-e-higiene.md` | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| Remoção do contrato de onboarding opt-in (documento canônico, hooks e regra de ferro 11), autorização permanente de delegação a subagentes e diagnóstico do smoke de hooks | `regras-de-ferro.md`, `governanca/hooks-onboarding-inativos.md`, `agentes/batman.md`, `roles/orquestrar.md` e notas de skills afetadas | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
-| Fallback anunciado do Severino para Claude Sonnet medium, enquadramento imperativo em `.claude/agents/severino.md` e nova permissão de conteúdo para adaptadores de agente em `docs/rules.md` | `agentes/severino.md`, `regras-de-ferro.md`, nota de governança do template | Severino | 2026-08-19T23:59:59-03:00 | pendente de sincronização e conferência |
+❓ LACUNA: a sincronização das pendências desta aplicação com a base Obsidian ainda precisa ser conferida. A pasta `.codex/` existente no ambiente está somente leitura e não pôde receber a cópia do template.
 
 ## Próximo passo
 
+Concluir a ADR e o esqueleto Maven/SQLite, executar os gates e registrar os três commits solicitados, mantendo o domínio para os lotes 2–4.
 
 ## Região gerada
 
 <!-- minerva-continuity:generated:start -->
+Estado gerado para sincronização: lote 1 de governança e fundação da aplicação Minerva Finanças em andamento.
 <!-- minerva-continuity:generated:end -->

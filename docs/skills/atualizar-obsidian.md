@@ -17,7 +17,7 @@ Windows : C:\Users\mclov\OneDrive\Documentos\Obsidian Vault\mclov\Documents\Seco
 WSL     : /mnt/c/Users/mclov/OneDrive/Documentos/Obsidian Vault/mclov/Documents/SecondBrain/Bases/Minerva
 ```
 
-A base fica **fora do repositório**. Consequência que mais importa: o diff do PR não prova que você a atualizou. Ao tocar um gatilho, registre imediatamente em `docs/continuidade.md` a origem, destino, responsável e prazo; a sincronização ocorre em até 24 horas, ou antes se o usuário pedir, e só é declarada após conferir o caminho escrito.
+A base fica **fora do repositório**. Consequência que mais importa: o diff do PR não prova que você a atualizou. Ao tocar um gatilho, registre imediatamente em `docs/pendencias-obsidian.md` a origem, destino, responsável e prazo; a sincronização ocorre em até 24 horas, ou antes se o usuário pedir, e só é declarada após conferir o caminho escrito.
 
 Se o caminho estiver inacessível (OneDrive fora do ar, permissão negada), **diga isso ao usuário e não afirme que documentou.** Mantenha a pendência rastreada no prazo; não invente caminho alternativo. Pendência vencida bloqueia conclusão e trabalho dependente.
 
@@ -25,7 +25,7 @@ Se o caminho estiver inacessível (OneDrive fora do ar, permissão negada), **di
 
 Sempre que o que você mudou aparecer na tabela abaixo. Também ao auditar: rode a mesma tabela contra a mudança alheia.
 
-**Quando não usar:** mudança que não toca gatilho nenhum — formatação, typo em comentário, renomeação interna sem efeito em regra. A exceção enxuta da regra 9 só pode dispensar documentação formal nessa situação, após autorização explícita do usuário para a mudança, e mantém o registro obrigatório no PR. Declarar `nenhum gatilho tocado` custa dez segundos; pular a declaração não é permitido.
+**Quando não usar:** mudança que não toca gatilho nenhum — formatação, typo em comentário, renomeação interna sem efeito em regra. A exceção enxuta da regra 9 só pode dispensar documentação formal nessa situação, após autorização explícita do usuário para a mudança, e mantém o registro obrigatório no PR. Declarar `nenhum gatilho tocado` custa poucos segundos; pular a declaração não é permitido.
 
 ## Tabela de gatilhos
 
@@ -45,7 +45,7 @@ Sempre que o que você mudou aparecer na tabela abaixo. Também ao auditar: rode
 | Definição de agente ou adaptador de ferramenta | `<BASE>/agentes/<agente>.md` |
 | Qualquer skill, inclusive esta | `<BASE>/skills/<skill>.md` |
 | Task criada, concluída, cancelada ou com escopo alterado | `<BASE>/tasks/t-NNN-<slug>.md` |
-| Qualquer das dez regras de ferro | `<BASE>/regras-de-ferro.md` |
+| Qualquer regra de ferro | `<BASE>/regras-de-ferro.md` |
 
 Na dúvida entre dois destinos, escreva nos dois e cruze os links. Nota a mais é barata; gatilho não documentado reprova o PR.
 

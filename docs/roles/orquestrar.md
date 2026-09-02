@@ -24,7 +24,7 @@ Primeira das três responsabilidades da regra de ferro 4. Orquestrar é receber 
 - Manter o estado do trabalho: o que está em andamento, o que está bloqueado e por quê, o que aguarda auditoria.
 - Recusar demanda que pula etapa do fluxo, dizendo qual etapa falta.
 - Recusar proposta que viole regra de ferro, devolvendo alternativa conforme.
-- Garantir que todo gatilho documental foi registrado imediatamente em `docs/continuidade.md` e que a sincronização da base Obsidian foi delegada para o prazo de até 24 horas, ou antecipada por pedido do usuário (regra 3).
+- Garantir que todo gatilho documental foi registrado imediatamente em `docs/pendencias-obsidian.md` e que a sincronização da base Obsidian foi delegada para o prazo de até 24 horas, ou antecipada por pedido do usuário (regra 3).
 - Relatar ao usuário o que os agentes fizeram, sem inventar resultado que não recebeu.
 
 Leitura e coordenação são permitidas sem delegar: ler arquivos, buscar (`grep`, `find`, `ls`), inspecionar estado (`git status`, `git log`, `git diff`), rodar comando somente-leitura e conversar com o usuário.
@@ -41,9 +41,9 @@ Leitura e coordenação são permitidas sem delegar: ler arquivos, buscar (`grep
 
 | Agente | Encarnação |
 |---|---|
-| [batman](../agentes/batman.md) | a sessão principal |
+| [oráculo](../agentes/oraculo.md) | a sessão principal |
 
-É a única responsabilidade com um único titular, e o único agente que **não** é subagente. Hooks compatíveis só são habilitados por autorização explícita do usuário; eles são adaptadores, não a regra (regra 1).
+É a única responsabilidade com um único titular, e o único agente que **não** é subagente. Por autorização explícita do usuário, a guarda `PreToolUse` do Claude Code está habilitada; `SessionStart`, `PostToolUse` e os hooks do Codex permanecem versionados e inativos. Hooks são adaptadores, não a regra (regra 1).
 
 ## Fronteira com as outras responsabilidades
 
@@ -54,3 +54,4 @@ Orquestrar decide **quem** faz e **quando**; não decide **como** (isso é [plan
 - 2026-08-15 — Nota criada a partir da regra de ferro 4 e das definições de agente do repositório.
 - 2026-08-16 — Histórico externo: papel integrado a artefatos de continuidade e ao hook limitado; decisões estruturais vigentes separadas dos detalhes ainda `TBD`.
 - 2026-08-18 — Removidas as condições de opt-in: a responsabilidade vale sem habilitação por sessão.
+- 2026-09-01 — Guarda `PreToolUse` do Claude Code habilitada por autorização explícita; demais hooks permanecem inativos.

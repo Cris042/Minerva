@@ -1,4 +1,7 @@
 # Segredos e configuração local
+.claude/worktrees/
+.claude/RESUME.md
+.validacao/
 .env
 .env.*
 !.env.example

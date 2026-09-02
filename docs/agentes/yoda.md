@@ -119,6 +119,6 @@ HLD, ADR, parecer sobre FDD, definição de camadas e fronteiras, lista de `❓ 
 ## Pendências
 
 - **Detalhes de camada** — nomes de pacote e layout de diretório só podem ser fixados depois da ADR de stack. A arquitetura até lá é escrita em termos de capacidade.
-- **Limite do sistema base.** O sistema escolar legado é referência funcional e possível origem de migração, a validar pela aplicação consumidora. A tecnologia de armazenamento do legado é fato histórico, não decisão do template. Comportamento não comprovado pelo legado, PRD ou FDD continua sendo `❓ LACUNA`; vulnerabilidade do legado não é regra a preservar.
+- **Limite do sistema base.** Um sistema legado da aplicação consumidora pode ser referência funcional e possível origem de migração, a validar pela própria aplicação. A tecnologia de armazenamento do legado é fato histórico, não decisão do template. Comportamento não comprovado pelo legado, PRD ou FDD continua sendo `❓ LACUNA`; vulnerabilidade do legado não é regra a preservar.
 
 Nada aqui depende da stack para começar — mas quase tudo depende de haver um domínio a modelar.

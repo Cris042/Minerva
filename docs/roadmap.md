@@ -1,11 +1,21 @@
-# Roadmap
+# Roadmap — Minerva Finanças
 
-**Autor:** Cristóvão Augusto
+Aplicação de finanças pessoais para o desafio MAPS, construída em quatro lotes.
 
-## Estado
+## Lote 1 — Governança e fundação
 
-`❓ LACUNA` — não há direção de produto, fases, épicos ou prioridades aprovados para uma aplicação consumidora deste template.
+- Governança copiada do template autorizado e estado reescrito para esta aplicação.
+- Stack registrada na [ADR-001](adrs/adr-001-stack-da-aplicacao.md).
+- Esqueleto Java 25 + Spring Boot + Maven, SQLite embarcado e schema inicial.
 
-## Uso futuro
+## Lote 2 — Nível 1
 
-Um roadmap só será criado ou atualizado a partir de direção explícita do usuário. Ele não pode ser inferido dos agentes, skills, dossiês históricos ou decisões `TBD` do template.
+Implementar APIs de conta corrente, CRUD de ativos, compras, vendas e consulta de posição, com validações de valores, quantidades, saldo e posição.
+
+## Lote 3 — Nível 2
+
+Adicionar datas de emissão/vencimento e movimento, valores de mercado por data, consultas temporais, validação de não negatividade em nenhuma data e consulta assíncrona de posição com memória constante (opção B), além da alternativa multiusuário (opção A).
+
+## Lote 4 — Nível 3 e entrega
+
+Endurecer thread-safety e desempenho concorrente, completar testes de integração, pré-cadastros, Dockerfile, docker-compose, README final e documentação da segurança e execução.
