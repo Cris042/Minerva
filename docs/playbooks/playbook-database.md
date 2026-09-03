@@ -68,6 +68,19 @@
 3. Retry da transação inteira no 40P01 (seguro: uma delas foi revertida por completo), com limite de tentativas.
 4. `NOWAIT`/`SKIP LOCKED` onde esperar não faz sentido ("recurso indisponível" na hora — playbook-backend §10).
 
+**Trava que não é deadlock de query — driver nativo sob processos concorrentes.** Observado em
+sessão real com SQLite embarcado (driver `sqlite-jdbc`, mas a classe de problema não é exclusiva
+dele): rodar duas JVMs de teste/build ao mesmo tempo no mesmo host (por exemplo, a suíte automatizada
+e uma instância manual da aplicação, ou dois `mvn test` simultâneos) pode travar uma das duas
+indefinidamente dentro da chamada nativa de abertura de conexão — a thread aparece `RUNNABLE` num
+dump de thread (`jstack`), não `BLOCKED`, porque o bloqueio acontece dentro de código nativo que a
+JVM não enxerga como lock Java. **Sintoma:** processo com CPU acumulado parado de crescer entre duas
+capturas de `jstack` espaçadas — CPU idêntico com tempo decorrido maior prova travamento real, não
+lentidão. **Diagnóstico rápido:** `ps aux | grep -E "java|mvn"` antes de qualquer suíte — se houver
+mais de um processo Java/Maven do mesmo repositório rodando, mate os outros antes de investigar
+qualquer coisa no nível de query ou de schema. **Prevenção:** nunca rodar build/teste/app em paralelo
+no mesmo host contra o mesmo banco embarcado sem confirmar isolamento primeiro.
+
 ## 5. Contenção de lock / transação longa
 
 **Como identificar**: `pg_stat_activity` com `state = 'idle in transaction'` ou `wait_event_type = 'Lock'`; `pg_locks` com `granted = false`; p99 alto sob concorrência com CPU do banco baixa (todos esperando, ninguém trabalhando); migration enfileirada atrás de transação longa.

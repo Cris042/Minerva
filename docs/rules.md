@@ -103,12 +103,18 @@ Definições de agentes, roles e skills são markdown neutro, versionado no repo
 
 ## Documentação no Obsidian
 
-A documentação oficial vive na base **`Minerva`** do vault Obsidian do usuário, **fora deste repositório**:
+A base **`Minerva`** do vault Obsidian do usuário é a documentação **deste template** — governança, agentes, skills, roles, decisões sobre como projetos são operados. Ela **não é** a base de nenhuma aplicação consumidora:
 
 ```
 Windows : C:\Users\mclov\OneDrive\Documentos\Obsidian Vault\mclov\Documents\SecondBrain\Bases\Minerva
 WSL     : /mnt/c/Users/mclov/OneDrive/Documentos/Obsidian Vault/mclov/Documents/SecondBrain/Bases/Minerva
 ```
+
+**Toda aplicação consumidora ganha sua própria base, nomeada pelo produto** (ex.: `Bases/<Nome do Produto>`), irmã de `Bases/Minerva` e igualmente isolada de `Bases/Freya` e de qualquer outra base de outro projeto. Nunca grave ADR, PRD, HLD, FDD, roadmap ou task de uma aplicação consumidora dentro de `Bases/Minerva`: essa base já tem sua própria numeração de ADR e seu próprio roadmap, e uma escrita ali colide silenciosamente com decisões que não são desta aplicação — dois `ADR-002` no mesmo acervo é exatamente esse defeito, e roadmap sobrescrito é decisão do usuário apagada sem que ele tenha pedido.
+
+**Antes da primeira escrita de uma aplicação consumidora**, confirme que a base do produto existe e é exclusiva dela: se `Bases/<Nome do Produto>` não existir, crie-a (espelhando a estrutura de `Bases/Minerva` — `adrs/`, `prds/`, `hlds/`, `fdds/`, `tasks/`, `design/`, `roadmap.md`); se existir mas parecer conter conteúdo de outro domínio, **pare e escale ao usuário antes de escrever** — não presuma que é seguro reaproveitar. Isso não é exceção ao "cópia canônica vence após conferência": é o passo que roda **antes** de qualquer conferência ter sentido, porque conferir a base errada não prova nada sobre a base certa.
+
+**Sandbox de ferramenta com raiz gravável fixa por caminho** (ver a definição de Severino) precisa ganhar a raiz da base nova quando ela for criada — o sandbox não descobre a base sozinho. Trate a ausência dessa raiz como o Caso 2 de falha material do fallback do agente que a criou (negação do ambiente + efeito ausente), não como bug misterioso.
 
 **Todo gatilho vira pendência documental imediata.** Como a base está fora do repositório, o diff do PR não prova sua atualização. Registre em `docs/pendencias-obsidian.md` a origem, o destino, o responsável e o prazo máximo aplicável; sincronize antes se o usuário pedir. A nota só é declarada sincronizada depois de escrita e conferida. A base anterior não pode ser apresentada como atualizada enquanto houver pendência; divergência não é resolvida silenciosamente.
 
@@ -207,7 +213,7 @@ roadmap → épico → PRD → RFC (quando houver deliberação) → HLD (quando
 - **LLD:** contratos e detalhes executáveis. Opcional; usar quando o FDD não reduzir ambiguidade suficiente para implementar e testar com segurança. **Dono: quem implementa; revisor: Yoda quando tocar arquitetura, fronteira ou contrato.**
 - **RFC:** proposta e alternativas antes de decisão relevante ainda em aberto. Opcional; tomada a decisão, seu registro segue a regra de ADR aplicável.
 - **Task:** unidade executável derivada do PRD e do FDD, com escopo fechado. **Numeração:** a primeira task formal do ciclo atual é `T-001`, e as seguintes avançam sequencialmente a partir dela; não inferir numeração por notas, arquivos ou registros históricos.
-- **PR:** entrega da task, com testes e evidências anexadas. **Auditoria:** revisão contra PRD e regras de ferro, por agente diferente de quem implementou. **Merge:** só após auditoria aprovada e pipelines verdes. **Publicação e deploy:** custo financeiro zero e gates continuam obrigatórios.
+- **PR:** entrega da task, com testes e evidências anexadas. **Auditoria:** revisão contra PRD e regras de ferro, por agente diferente de quem implementou. **Merge:** só após auditoria aprovada e pipelines verdes, e executado por agente diferente de quem implementou — Severino não aprova nem faz merge do próprio PR (regra de ferro 4), e Yoda e Patrick Jane não executam comando algum por definição própria; o merge, quando não houver revisor humano disponível, é executado por **Jarvis** (implementa operação pós-pipeline). Sem essa atribuição explícita, o orquestrador reconstrói essa decisão do zero a cada PR. **Publicação e deploy:** custo financeiro zero e gates continuam obrigatórios.
 
 **ADR é transversal:** não ocupa posição rígida na cadeia, porque uma decisão estrutural pode nascer no PRD, RFC, HLD, FDD, LLD ou diante de um problema encontrado no código.
 
