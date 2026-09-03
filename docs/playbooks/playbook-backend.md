@@ -261,15 +261,70 @@ Fonte da verdade: **este playbook** (convenção de projeto, sem ADR — baixo i
 
 | Camada | Responsabilidade | Regra prática |
 |---|---|---|
-| **Controller** (`api/`) | recebe a requisição HTTP | decodifica em DTO, valida, chama o Actor, serializa DTO de resposta. Nunca expõe entidade de domínio. |
+| **Controller/REST** | recebe a requisição HTTP | decodifica em DTO, valida, chama o Actor, serializa DTO de resposta. Nunca expõe entidade de domínio, nunca fala com DAO direto. |
 | **Actor** | orquestra o caso de uso | componente concreto; coordena as chamadas e decide o que deve ser feito. |
 | **Resolver** | define o fluxo | componente concreto; resolve dependências e escolhe caminhos. CRUD simples → passthrough **documentado**. |
-| **Service** (`service/`) | regra de negócio | lógica principal, testável sem HTTP/DB. |
+| **Service** | regra de negócio | lógica principal, testável sem HTTP/DB. |
 | **DAO** | acesso a dados e integrações | contrato com implementação real e dublê de teste; consultas isoladas e parametrizadas. |
 
 **Regra anti-ritual:** a camada sempre existe como responsabilidade nomeada, mas só ganha
 **interface** quando há segunda implementação ou decisão real. Interface fica reservada a **DAO**
-e, para a camada `Service`, a módulos com cenário crítico de QA.
+e, para a camada `Service`, a módulos com cenário crítico de QA. Quando uma interface existir,
+prefixo `I` (`IContaCorrenteDAO`); a implementação usa o mesmo nome sem o prefixo. Sem essa
+convenção fixada aqui, cada implementação decide diferente e a divergência só aparece na revisão.
+
+### A.0. Organização de pastas: por camada técnica ou por entidade — decidir antes de codificar
+
+Duas formas válidas de agrupar as camadas acima em pastas, e a escolha **precisa ser tomada e
+registrada antes do primeiro código**, não descoberta no meio do projeto:
+
+- **Por camada técnica** (`controller/`, `service/`, `dao/` na raiz, uma pasta por responsabilidade,
+  todas as entidades misturadas dentro): funciona bem quando o sistema tem poucas entidades (até
+  três ou quatro) e pouca navegação cruzada entre elas.
+- **Por entidade, com subpasta por função** (`br.exemplo.<entidade>.<funcao>` — `rest`, `actor`,
+  `service`, `dao`, `builder`, `dto`, `dominio`): funciona melhor quando o sistema tem várias
+  entidades com rotas, regras e testes próprios, porque quem mexe numa funcionalidade mexe num
+  diretório só, em vez de four árvores distantes.
+
+**Sinal concreto de que a organização por camada técnica parou de servir:** se, ao abrir uma tarefa,
+a pergunta "quais arquivos essa mudança toca" respondida por camada técnica sempre aponta pastas
+inteiras não relacionadas (todo `service/`, todo `dao/`) só para achar o pedaço de uma entidade —
+é hora de reorganizar por entidade, e essa reorganização é migração estrutural com o mesmo peso de
+qualquer outra (ADR, PR próprio, sem misturar com mudança de comportamento). Decidir a forma errada
+no início e só perceber depois de o sistema crescer custa uma migração inteira de todos os arquivos
+de uma vez — se houver qualquer sinal de que o projeto vai crescer além de três ou quatro entidades,
+prefira organizar por entidade desde a primeira linha de código.
+
+### A.0.1. Convenção de nomenclatura de classe — fixar antes de codificar, não depois
+
+Toda classe **DTO** de request/response termina em `DTO` (`AtivoRequisicaoDTO`,
+`PosicaoRespostaDTO`); toda classe **enum** termina em `Enum` (`TipoAtivoEnum`); toda classe de
+**teste** termina em `Teste` — unitário simples (`CalculoPosicaoTeste`) e de integração com o
+qualificador explícito (`AtivoIntegracaoTeste`), ou o sufixo de convenção nativa do ecossistema
+escolhido quando ele afetar descoberta automática por ferramenta de build (nesse caso, registrar a
+convenção adotada e o motivo, e verificar que a ferramenta de build ainda descobre as classes depois
+de qualquer renomeação — ver nota abaixo). Sem essa fixação, projetos reais nomeiam a mesma coisa de
+formas diferentes ao longo do tempo (`AtivoRequisicao` numa entidade, `PrecoRequisicaoDTO` noutra) e
+a correção depois é uma renomeação em cascata que toca dezenas de arquivos.
+
+**Cuidado ao renomear classe de teste depois que o projeto já existe:** se a ferramenta de build
+descobre teste por padrão de nome (sufixo/prefixo em configuração explícita, ex. `**/*Test.java`),
+renomear a classe sem atualizar esse padrão faz a suíte parar de rodar **silenciosamente** — o build
+pode continuar verde porque não há teste algum sendo executado, em vez de vermelho porque um teste
+falhou. Isso é o pior tipo de falso verde: o gate concorda com a mudança errada. Trate a atualização
+do padrão de descoberta como parte do mesmo commit da renomeação, nunca um passo posterior, e
+confirme depois, olhando o número real de testes executados, que a contagem bateu com a de antes da
+renomeação.
+
+### A.0.2. Fábrica para operações irmãs — só depois de haver duas
+
+Quando duas ou mais operações compartilham a mesma rota/contrato de entrada e só divergem no que
+fazem depois (crédito/débito no mesmo endpoint de lançamento, compra/venda na mesma rota de
+movimentação, consulta síncrona/assíncrona do mesmo recurso), uma fábrica escolhe o componente
+concreto atrás de um único ponto de entrada, em vez de um endpoint por variação. **Só criar a
+fábrica quando já existirem as duas implementações concretas** — fábrica com uma implementação só é
+indireção sem ganho, e o risco cresce junto: se uma das "operações irmãs" for descontinuada mais
+tarde, a fábrica que sobra com um caso só deve ser removida, não mantida "por precaução".
 
 ## A.1. DDD tático em módulos críticos
 

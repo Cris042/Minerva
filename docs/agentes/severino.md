@@ -75,6 +75,43 @@ O modo `workspace-write`, as duas raízes graváveis extras (`<repo>/.git` e `Ba
 `network_access=true` permanecem exatamente na postura do PR #32. Não ampliar nem reduzir qualquer
 liberação, e não introduzir flag de bypass.
 
+**Emenda operacional (2026-09-03): "aguardar" não é a mesma coisa que "bloquear a chamada".** Em
+uso real, repetidas vezes na mesma sessão, o chamador encerrou o turno dizendo "vou aguardar a
+notificação" segundos depois de lançar o comando acima — sem que o processo tivesse sequer montado
+sua sandbox ainda. Isso não é o chamador desobedecendo a regra por má-fé: é a regra, escrita como
+"é proibido encerrar o turno", colidindo com o fato de que uma chamada de ferramenta não consegue
+ficar parada 10-20 minutos dentro do mesmo turno sem violar o teto de tempo do próprio chamador — a
+mesma restrição que já motivou o background em primeiro lugar. A ambiguidade prática gerou, na
+mesma sessão, dois efeitos opostos e igualmente caros: (a) o chamador concluiu "morreu" cedo demais,
+porque o processo pai (`codex-code-mode-host`) ainda não tinha montado os processos filhos da
+sandbox (`codex-linux-sandbox`, `bwrap`) — isso normalmente leva alguns a dezenas de segundos, não é
+instantâneo — e retomou desnecessariamente uma execução que seguia viva; e (b), em pelo menos duas
+ocasiões nesta sessão, o processo **realmente** morreu sem sentinela e sem nenhum efeito produzido,
+sem que nada na saída indicasse por quê.
+
+Duas correções, não uma reescrita da regra:
+
+1. **Armar um monitor de eventos sobre o arquivo de saída e encerrar o turno é uma forma válida de
+   "aguardar"**, desde que o chamador não declare conclusão, não resuma resultado e não decida
+   próximo passo antes do sentinela realmente aparecer como última linha do arquivo — a proibição
+   é contra **declarar terminado sem o sentinela**, não contra usar o mecanismo de notificação que a
+   própria ferramenta oferece para isso. Ferramentas que não oferecem notificação de conclusão de
+   processo em background devem fazer polling ativo dentro do turno, com backoff, em vez de uma
+   única checagem seguida de silêncio.
+2. **Antes de concluir que o processo morreu, dê uma janela de graça de pelo menos 30-60 segundos e
+   verifique por mais de um padrão de processo** (o binário do host, o wrapper de sandbox e os
+   processos filhos podem ter nomes diferentes entre si — checar só um padrão de `grep` já produziu
+   falso negativo nesta sessão). Uma única leitura de `ps aux` sem espaço para o processo subir não
+   prova morte; o teste que prova morte é o arquivo de saída **parado** (sem crescer) por essa janela
+   inteira, não a ausência momentânea na primeira checagem.
+
+Dívida aceita, não corrigida aqui: o comando de background usa `{ ... } &` dentro do mesmo shell da
+chamada `Bash`, sem `disown` nem `setsid`. Isso deixa aberta a hipótese, não testada nesta emenda,
+de que o processo fique preso ao ciclo de vida do shell que o lançou e morra com ele em certas
+condições — coerente com as mortes reais observadas nesta sessão, mas não confirmado como causa. Se
+confirmado, a correção é `setsid` + `disown` (ou equivalente) no comando canônico acima; não adotar
+sem prova.
+
 ### Por que cada liberação existe e o que ela custa
 
 O `workspace-write` do Codex 0.147.0 monta `<raiz>/.git`, `<raiz>/.agents` e `<raiz>/.codex` como
@@ -90,6 +127,15 @@ DrvFs/WSL, espaços no caminho e a hipótese de que `writable_roots` substituiri
 | Liberação | Por que existe | Custo aceito, nomeado |
 |---|---|---|
 | `Bases/Minerva` gravável | a regra de ferro 3 exige registrar a pendência documental e sincronizar a base Obsidian em até 24 h, ou antes por pedido do usuário, e a base fica fora do repositório | escrita fora do repositório, restrita a um caminho; o diff do PR não prova essa escrita |
+
+**Raiz gravável é hardcoded, não descoberta.** A lista de `writable_roots` acima é literal, não um
+padrão nem uma variável de ambiente. Quando uma aplicação consumidora ganha sua própria base
+Obsidian (ver `docs/rules.md` → *Documentação no Obsidian*, "toda aplicação consumidora ganha sua
+própria base"), essa raiz **precisa ser adicionada aqui manualmente** antes que o Codex consiga
+escrever nela — sem isso, a tentativa falha com negação do ambiente (Caso 2 do fallback), o que já
+aconteceu nesta sessão e obrigou uma segunda rodada só para adicionar a raiz. Ao criar uma base
+Obsidian nova para uma aplicação consumidora, adicionar a raiz aqui é parte da mesma tarefa, não um
+passo posterior.
 | `<repo>/.git` gravável | sem ela nenhuma mutação de git acontece dentro da sandbox: o agente que implementa não consegue commitar, e todo o contrato de entrega por branch e PR fica impossível | **`.git/hooks/` passa a ser gravável.** Um hook git executa **no host, fora da sandbox**, na próxima operação git de qualquer ator — sem passar por PR, sem revisão, sem aparecer em diff. É a superfície mais séria criada por esta mudança |
 | `network_access=true` | `git fetch`, `git push` e resolução de nome não funcionam sob o isolamento de rede do `workspace-write` | o isolamento de rede cai para **o turno inteiro**, não só para o `git`. Combinado com `.git/hooks/` gravável e leitura do repositório, é superfície de exfiltração real |
 
@@ -279,3 +325,4 @@ Linguagem, framework, build, layout de diretório, comandos de teste, persistên
 - 2026-08-28: a encarnação Codex estava inoperante — o `workspace-write` monta `<raiz>/.git` como bind read-only aninhado no bind gravável, e nenhuma mutação de git era possível. Por decisão explícita do usuário, `<repo>/.git` passou a raiz gravável e `network_access` passou a `true`, com o custo nomeado em `## Como é executado`: `.git/hooks/` gravável executa no host, fora da sandbox, e o isolamento de rede cai para o turno inteiro. A afirmação de que nenhuma flag de bypass havia sido introduzida foi substituída por ser verdadeira só pela metade.
 - 2026-08-28: a condição de fallback ganhou um segundo caso — falha material dentro do turno com código de saída zero —, medido em `EXIT_CODE_CODEX=0` com `RC_GIT_COMMIT=128`. A redação anterior, escrita só em termos de código de saída, era cega para essa classe de falha e paralisou o agente. O caso novo exige negação do ambiente registrada **e** efeito verificável como ausente, para o critério permanecer fechado.
 - 2026-09-01: o despacho em background passou a definir arquivo de saída, sentinela `EXIT_CODE_CODEX=` e espera obrigatória; turno encerrado com Codex ainda em execução foi nomeado como terceiro estado, fora do fallback.
+- 2026-09-03: emenda operacional sobre "aguardar" ≠ "bloquear a chamada" — armar monitor de eventos e encerrar o turno passou a ser forma válida de aguardar, com a proibição restrita a declarar conclusão sem o sentinela; adicionada janela de graça de 30-60s e checagem por múltiplo padrão de processo antes de concluir morte. Registrada a dívida não corrigida sobre `disown`/`setsid` ausentes no comando de background, e a necessidade de atualizar `writable_roots` manualmente sempre que uma aplicação consumidora ganhar base Obsidian própria (ver `docs/rules.md`). Observado em sessão real: dois casos de morte real sem sentinela e sem efeito, e ao menos um caso de falso negativo de morte por checagem prematura — ambos custaram retrabalho evitável.
