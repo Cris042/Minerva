@@ -38,16 +38,18 @@ Escolha do usuário, registrada aqui por ser a definição canônica. Adaptador:
 
 ## Como é executado
 
-Ao ser despachado, o adaptador lê esta definição e repassa a demanda **integral** ao Codex em uma
-única chamada `Bash`, lançada **em background** pelo chamador, com o comando completo abaixo. O
-comando cria o diretório de saída, captura o retorno em
-`$repo_root/.validacao/severino-codex.out` e emite o sentinela final
+Ao ser despachado, o adaptador exige o identificador não vazio
+`SEVERINO_DESPACHO_ID` e repassa a demanda **integral** ao Codex em uma única chamada `Bash`,
+lançada **em background** pelo chamador. O comando cria, antes das guardas de semeadura, a única
+saída da execução em
+`$repo_root/.validacao/severino-codex-${SEVERINO_DESPACHO_ID}.out` e emite o sentinela final
 `EXIT_CODE_CODEX=<código>`. `.validacao/` é artefato efêmero, ignorado pelo git e não é versionado;
-o próprio comando o cria. O chamador deve aguardar até que o sentinela exista, mas ele só conta
-quando `grep -q '^EXIT_CODE_CODEX='` casar na **última linha** do arquivo; ocorrência em qualquer
-outra posição é eco da demanda e não indica conclusão. É proibido encerrar o turno antes disso. O background é
-obrigatório porque o teto de 10 minutos do chamador encerra a chamada em primeiro plano antes de o
-turno terminar; isso foi medido em 2026-08-30: `exit 143` (`SIGTERM`), com zero efeito produzido.
+o próprio comando o cria. O chamador deve aguardar o arquivo específico do despacho e só pode
+considerar conclusão quando `grep -q '^EXIT_CODE_CODEX='` casar na **última linha** dele;
+ocorrência em qualquer outra posição é eco da demanda e não indica conclusão. É proibido encerrar o
+turno antes disso. O background é obrigatório porque o teto de 10 minutos do chamador encerra a
+chamada em primeiro plano antes de o turno terminar; isso foi medido em 2026-08-30: `exit 143`
+(`SIGTERM`), com zero efeito produzido.
 
 ```bash
 # O chamador deve definir a variável demanda antes de executar este bloco.
@@ -55,6 +57,16 @@ turno terminar; isso foi medido em 2026-08-30: `exit 143` (`SIGTERM`), com zero 
 # Sem ela, a lista de raízes é byte a byte a mesma de sempre.
 repo_root="$(git rev-parse --show-toplevel)"
 base_minerva="/mnt/c/Users/mclov/OneDrive/Documentos/Obsidian Vault/mclov/Documents/SecondBrain/Bases/Minerva"
+
+case "${SEVERINO_DESPACHO_ID:-}" in
+  ''|*[!A-Za-z0-9._-]*)
+    echo "RECUSA: SEVERINO_DESPACHO_ID ausente ou inseguro." >&2
+    exit 2
+    ;;
+esac
+saida="$repo_root/.validacao/severino-codex-${SEVERINO_DESPACHO_ID}.out"
+mkdir -p "$(dirname "$saida")"
+: > "$saida"
 
 # ---- Raízes de semeadura declaradas — PONTO ÚNICO DE EDIÇÃO ----------------
 # Uma linha por aplicação consumidora em semeadura, caminho absoluto literal.
@@ -67,7 +79,10 @@ raizes_semeadura="
 raizes="\"$repo_root/.git\",\"$base_minerva\""
 
 # Declaração vencida = destino já semeado e Fase 3 não executada.
-# Nunca é montada; o privilégio se revoga sozinho e sobra apenas o lembrete.
+# Nunca é montada; o privilégio se revoga sozinho com base no estado do filesystem, não por
+# remoção da concessão. Se a Fase 3 for esquecida e o destino for esvaziado ou movido, a declaração
+# remanescente volta a satisfazer a guarda de vazio; só um despacho que defina raiz_destino
+# explicitamente para aquele caminho reabre isso. O despacho comum nunca reabre.
 printf '%s\n' "$raizes_semeadura" | while IFS= read -r d; do
   [ -n "$d" ] || continue
   if [ -e "$d" ] && [ -n "$(ls -A "$d" 2>/dev/null)" ]; then
@@ -77,24 +92,39 @@ done
 
 if [ -n "${raiz_destino:-}" ]; then
   raiz_destino="${raiz_destino%/}"
+  case "$raiz_destino" in
+    *$'\n'*|*..*)
+      printf '%s\n' "RECUSA: raiz_destino contem newline ou ..; caminho rejeitado: $raiz_destino" >> "$saida"
+      printf 'EXIT_CODE_CODEX=2\n' >> "$saida"
+      printf '%s\n' "RECUSA: raiz_destino contem newline ou ..; caminho rejeitado: $raiz_destino" >&2
+      exit 2
+      ;;
+  esac
   if ! printf '%s\n' "$raizes_semeadura" | grep -qxF "$raiz_destino"; then
     echo "RECUSA: $raiz_destino nao esta declarada em raizes_semeadura." >&2
     echo "        Execute a Fase 0: declare a raiz no bloco acima, em docs/agentes/severino.md," >&2
     echo "        por PR, antes de despachar a semeadura." >&2
+    printf 'EXIT_CODE_CODEX=2\n' >> "$saida"
     exit 2
   fi
   if [ -e "$raiz_destino" ] && [ -n "$(ls -A "$raiz_destino" 2>/dev/null)" ]; then
     echo "RECUSA: $raiz_destino existe e nao esta vazia." >&2
     echo "        Semeadura nao re-semeia repositorio existente; trabalhe de dentro dele." >&2
+    printf 'EXIT_CODE_CODEX=2\n' >> "$saida"
     exit 2
   fi
   mkdir -p "$raiz_destino"
-  git -C "$raiz_destino" init -q
+  git -C "$raiz_destino" init -q --template=''
+  rc_git_init=$?
+  if [ "$rc_git_init" -ne 0 ]; then
+    printf '%s\n' "RECUSA: git init falhou para $raiz_destino (rc=$rc_git_init)." >> "$saida"
+    printf 'EXIT_CODE_CODEX=2\n' >> "$saida"
+    printf '%s\n' "RECUSA: git init falhou para $raiz_destino (rc=$rc_git_init)." >&2
+    exit 2
+  fi
   raizes="$raizes,\"$raiz_destino\",\"$raiz_destino/.git\""
 fi
 
-saida="$repo_root/.validacao/severino-codex.out"
-mkdir -p "$(dirname "$saida")"
 {
   codex exec -m gpt-5.6-luna -c model_reasoning_effort=medium -s workspace-write \
     -c "sandbox_workspace_write.writable_roots=[$raizes]" \
@@ -104,11 +134,17 @@ mkdir -p "$(dirname "$saida")"
 } > "$saida" 2>&1 &
 ```
 
-`grep -qxF` é casamento de linha inteira, literal: nenhum glob, nenhuma substring. As guardas rodam **antes** do bloco em background de propósito — recusa precisa falhar alto na chamada, não virar arquivo de saída sem sentinela.
+`grep -qxF` é casamento de linha inteira, literal: nenhum glob, nenhuma substring. O arquivo
+específico do despacho é truncado antes das guardas; cada recusa escreve seu próprio sentinela
+`EXIT_CODE_CODEX=2` como última linha. As guardas rodam **antes** do bloco em background de
+propósito — recusa precisa falhar alto na chamada, sem deixar um sentinela de outro despacho
+legível como conclusão.
 
 A saída do Codex é devolvida como veio, sem resumo, comentário ou análise do encaminhador, depois da
-existência do sentinela ancorado: `grep -q '^EXIT_CODE_CODEX='` deve casar na última linha do
-arquivo de saída; ocorrência em qualquer outra posição é eco da demanda e não indica conclusão.
+existência do sentinela ancorado no arquivo específico informado por
+`$repo_root/.validacao/severino-codex-$SEVERINO_DESPACHO_ID.out`: `grep -q '^EXIT_CODE_CODEX='`
+deve casar na última linha desse arquivo; ocorrência em qualquer outra posição é eco da demanda e
+não indica conclusão.
 
 Se o repositório ainda não estiver inicializado, `git rev-parse --show-toplevel` falha e o
 chamador deve resolver a raiz por outra forma antes de executar o restante do comando.
@@ -196,7 +232,11 @@ necessária. Sessão aberta no template não conduz a Fase 2.
 partir daí o produto se opera sozinho e o template volta a não ter escrita nenhuma sobre ele.
 **Se a Fase 3 for esquecida, a declaração vence sozinha:** o destino já semeado não está mais vazio,
 o comando deixa de montá-lo e passa a imprimir o aviso. O privilégio se revoga no primeiro despacho
-seguinte; o texto esquecido vira lembrete, não porta aberta.
+seguinte; o texto esquecido vira lembrete, não porta aberta. Essa revogação é baseada no estado do
+filesystem, não remove a concessão: se o destino for esvaziado ou movido, a declaração remanescente
+volta a satisfazer a guarda de vazio, e só um despacho que defina `raiz_destino` explicitamente para
+aquele caminho reabre isso; o despacho comum nunca reabre. Erro de leitura ou enumeração não prova
+que ele está vazio e deve ser tratado como ressalva operacional.
 
 **Por que quatro fases e não uma.** A alternativa — o Severino do template conduzir o produto
 inteiro por uma raiz externa — exigiria manter uma raiz aberta por produto vivo, para sempre,
@@ -236,9 +276,9 @@ DrvFs/WSL, espaços no caminho e a hipótese de que `writable_roots` substituiri
 | Liberação | Por que existe | Custo aceito, nomeado |
 |---|---|---|
 | `Bases/Minerva` gravável | a regra de ferro 3 exige registrar a pendência documental e sincronizar a base Obsidian em até 24 h, ou antes por pedido do usuário, e a base fica fora do repositório | escrita fora do repositório, restrita a um caminho; o diff do PR não prova essa escrita |
-| `<repo>/.git` gravável | sem ela nenhuma mutação de git acontece dentro da sandbox: o agente que implementa não consegue commitar, e todo o contrato de entrega por branch e PR fica impossível | **`.git/hooks/` passa a ser gravável.** Um hook git executa **no host, fora da sandbox**, na próxima operação git de qualquer ator — sem passar por PR, sem revisão, sem aparecer em diff. É a superfície mais séria criada por esta mudança |
+| `<repo>/.git` gravável | sem ela nenhuma mutação de git acontece dentro da sandbox: o agente que implementa não consegue commitar, e todo o contrato de entrega por branch e PR fica impossível; a semeadura usa `git init -q --template=''` para não importar templates de hooks | **`.git/hooks/` passa a ser gravável.** Um hook git executa **no host, fora da sandbox**, na próxima operação git de qualquer ator — sem passar por PR, sem revisão, sem aparecer em diff. É a superfície mais séria criada por esta mudança |
 | `network_access=true` | `git fetch`, `git push` e resolução de nome não funcionam sob o isolamento de rede do `workspace-write` | o isolamento de rede cai para **o turno inteiro**, não só para o `git`. Combinado com `.git/hooks/` gravável e leitura do repositório, é superfície de exfiltração real |
-| raiz de semeadura declarada (`$raiz_destino` e `$raiz_destino/.git`), **temporária** | criar o repositório de uma aplicação consumidora é, por definição, o único trabalho que não pode acontecer dentro do repositório que ele vai criar; sem essa raiz o despacho falha por negação do ambiente, como em 2026-09-21, quando uma rodada inteira foi perdida sem produzir efeito | escrita fora do repositório restrita ao caminho de **um** produto, literal e auditável por diff. Três preços: **(i)** um produto novo não é gravável até que sua raiz entre neste arquivo, e cada produto custa duas edições em dois PRs; **(ii)** enquanto declarada, a raiz vale para **qualquer** despacho, não só o de semeadura — é a Fase 3, e a auto-revogação por declaração vencida, que impedem isso de virar acesso permanente; **(iii)** `$raiz_destino/.git/hooks/` nasce gravável pelo mesmo motivo do `<repo>/.git`, mitigado por o destino ser sempre repositório recém-criado, sem hook preexistente a sobrescrever |
+| raiz de semeadura declarada (`$raiz_destino` e `$raiz_destino/.git`), **temporária** | criar o repositório de uma aplicação consumidora é, por definição, o único trabalho que não pode acontecer dentro do repositório que ele vai criar; sem essa raiz o despacho falha por negação do ambiente, como em 2026-09-21, quando uma rodada inteira foi perdida sem produzir efeito | escrita fora do repositório restrita ao caminho de **um** produto, literal e auditável por diff. Três preços: **(i)** um produto novo não é gravável até que sua raiz entre neste arquivo, e cada produto custa duas edições em dois PRs; **(ii)** enquanto declarada, a raiz vale para **qualquer** despacho, não só o de semeadura — é a Fase 3, e a auto-revogação por declaração vencida, que impedem isso de virar acesso permanente; **(iii)** `$raiz_destino/.git/hooks/` nasce gravável pelo mesmo motivo do `<repo>/.git`, mitigado por o destino ser sempre repositório recém-criado, sem hook preexistente a sobrescrever, e pelo `git init -q --template=''`, que fixa template vazio |
 
 **Raiz gravável é literal, e esta lista não acumula um item permanente por produto.** As duas raízes
 permanentes acima são caminhos literais, não padrão nem variável de ambiente; a raiz de semeadura é
@@ -317,7 +357,7 @@ causa foi removida.
 
 **Terceiro estado — turno encerrado com o Codex ainda em execução.** Isso não é fallback, não é Caso 1
 nem Caso 2. Trocar de encarnação nesse estado é proibido; o chamador deve continuar aguardando
-`$repo_root/.validacao/severino-codex.out` e o sentinela, contado somente quando
+`$repo_root/.validacao/severino-codex-${SEVERINO_DESPACHO_ID}.out` e o sentinela, contado somente quando
 `grep -q '^EXIT_CODE_CODEX='` casar na última linha; ocorrência em outra posição é eco da demanda
 e não indica conclusão.
 
@@ -469,3 +509,8 @@ Linguagem, framework, build, layout de diretório, comandos de teste, persistên
   acontece de dentro do repositório novo, como `minerva-financas` já pratica. A instrução anterior de
   adicionar a raiz da base de cada produto **aqui** foi revertida. Reparada, no mesmo passe, a tabela
   de custos, cujo parágrafo intercalado quebrava a renderização desde 2026-09-03.
+- 2026-09-21: revisão independente do Neo corrigiu o contrato de despacho: `SEVERINO_DESPACHO_ID`
+  passou a ser obrigatório, cada despacho ganhou saída única criada antes das guardas, recusas
+  passaram a terminar com `EXIT_CODE_CODEX=2`, e a espera foi ancorada no arquivo específico. A
+  validação rejeita newline e `..` antes do `grep`, `git init` usa `--template=''` com rc verificado,
+  e a auto-revogação registra a ressalva de que um filesystem ilegível não prova destino vazio.
