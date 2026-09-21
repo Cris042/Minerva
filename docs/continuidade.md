@@ -1,22 +1,22 @@
 ## Task ativa
 
-Lote 1 de 4 do desafio MAPS: estabelecer governança, registrar a stack e criar a fundação Maven/SQLite, sem implementar domínio, casos de uso, REST ou frontend.
+Aplicar a correção de contrato decidida pelo Yoda para semeadura de aplicações consumidoras, com raiz literal declarada e janela temporária de mínimo privilégio; não declarar raiz de produto e não criar `minerva-contabil`.
 
 ## Estado atual
 
-Repositório novo em `main`, com a camada de governança derivada do template autorizado. A aplicação será construída nos lotes seguintes com Java 25, Spring Boot, Maven, SQLite embarcado e React.
+Branch nova a partir de `main`. Alterações canônicas em `docs/agentes/severino.md`, `docs/rules.md`, `docs/pendencias-obsidian.md` e continuidade; a base Obsidian Minerva aguarda ou receberá a sincronização das notas correspondentes.
 
 ## Decisões vigentes
 
-O lote 1 preserva somente governança, ADR de stack, esqueleto Maven, configuração SQLite, schema inicial e teste mínimo de contexto. A ADR-001 registra as decisões tecnológicas já tomadas.
+`raizes_semeadura` permanece vazio. A semeadura tem quatro fases: abrir a janela por PR, semear somente o repositório literal recém-criado, fazer bootstrap de dentro dele e fechar a janela por PR. O despacho comum conserva byte a byte as raízes permanentes existentes.
 
 ## Riscos e lacunas
 
-❓ LACUNA: a sincronização das pendências desta aplicação com a base Obsidian ainda precisa ser conferida. A pasta `.codex/` existente no ambiente está somente leitura e não pôde receber a cópia do template.
+❓ LACUNA: o bind `ro` aninhado de `$raiz_destino/.git` fora do workspace ainda é inferência; a primeira semeadura deve medir `/proc/self/mountinfo` ou confirmar `git commit` com `rc=0`. Revisão independente do Neo é obrigatória antes do merge.
 
 ## Próximo passo
 
-Concluir a ADR e o esqueleto Maven/SQLite, executar os gates e registrar os três commits solicitados, mantendo o domínio para os lotes 2–4.
+Extrair e validar o bloco bash, executar os gates mecânicos, sincronizar a base Obsidian se possível, revisar o diff, fazer commit, push e abrir PR sem aprovar ou fazer merge.
 
 ## Região gerada
 
