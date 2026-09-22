@@ -99,6 +99,28 @@ Definições de agentes, roles e skills são markdown neutro, versionado no repo
 | [Jarvis](agentes/jarvis.md) | Implementar operação | Ambientes, pós-pipeline, deploy, rollback, observabilidade, backup e incidente |
 | [c4-diagram-generator](agentes/c4-diagram-generator.md) | Planejar/revisar | Diagramas C4 em PlantUML, fundamentados em FDD aprovado |
 
+### Semeadura de aplicação consumidora
+
+O template não hospeda aplicação (regra 6) e não opera aplicação consumidora à distância. Um produto
+novo nasce em **quatro fases**, e a fronteira entre elas é o que impede o template de acumular
+escrita sobre todos os produtos já criados:
+
+| Fase | Onde roda | O que faz |
+|---|---|---|
+| **0 — abrir a janela** | template, por PR | declara literalmente o caminho absoluto do repositório novo como raiz gravável do agente |
+| **1 — semeadura** | sessão no template | cria o diretório irmão vazio, copia a camada de governança, ajusta o que é específico do produto, primeiro commit, remoto privado e `push`; registra no repositório novo a pendência documental que ela mesma criou |
+| **2 — bootstrap** | sessão dentro do repositório novo | base Obsidian do produto, PRD, ADR de stack, HLD, roadmap e primeiro entregável |
+| **3 — fechar a janela** | template, por PR | remove a declaração; o produto passa a se operar sozinho |
+
+A semeadura é a única ocasião em que um agente do template escreve fora do workspace e fora das
+bases Obsidian declaradas, e o privilégio é **mínimo e temporário por decisão explícita do usuário**:
+um caminho literal de um produto, nunca um diretório-pai, nunca um valor composto em tempo de
+despacho. Consertar, migrar ou re-semear um repositório que já existe **não é semeadura**: é trabalho
+de dentro dele. O custo aceito é o atrito de duas edições do contrato por produto; em troca, a
+permissão concedida é sempre provável por diff. A configuração concreta de sandbox que implementa
+isso pertence ao adaptador do agente e vive em [`docs/agentes/severino.md`](agentes/severino.md) →
+*Semeadura de aplicação consumidora*.
+
 ---
 
 ## Documentação no Obsidian
@@ -114,7 +136,7 @@ WSL     : /mnt/c/Users/mclov/OneDrive/Documentos/Obsidian Vault/mclov/Documents/
 
 **Antes da primeira escrita de uma aplicação consumidora**, confirme que a base do produto existe e é exclusiva dela: se `Bases/<Nome do Produto>` não existir, crie-a (espelhando a estrutura de `Bases/Minerva` — `adrs/`, `prds/`, `hlds/`, `fdds/`, `tasks/`, `design/`, `roadmap.md`); se existir mas parecer conter conteúdo de outro domínio, **pare e escale ao usuário antes de escrever** — não presuma que é seguro reaproveitar. Isso não é exceção ao "cópia canônica vence após conferência": é o passo que roda **antes** de qualquer conferência ter sentido, porque conferir a base errada não prova nada sobre a base certa.
 
-**Sandbox de ferramenta com raiz gravável fixa por caminho** (ver a definição de Severino) precisa ganhar a raiz da base nova quando ela for criada — o sandbox não descobre a base sozinho. Trate a ausência dessa raiz como o Caso 2 de falha material do fallback do agente que a criou (negação do ambiente + efeito ausente), não como bug misterioso.
+**Sandbox de ferramenta com raiz gravável fixa por caminho** (ver a definição de Severino) não descobre base nem repositório sozinho: a raiz precisa estar declarada, literalmente e por caminho absoluto, antes da primeira escrita. A raiz da base de uma aplicação consumidora é declarada **no contrato que vive no repositório dessa aplicação**, não no do template — é de lá que a base do produto é escrita, e concentrar essas raízes no template daria a ele escrita na base de todos os produtos já criados. O template só declara a raiz de um repositório irmão durante a janela de semeadura descrita em *Arquitetura de agentes → Semeadura de aplicação consumidora*, e a remove quando ela fecha. Trate a ausência da raiz aplicável como o Caso 2 de falha material do fallback do agente que a criou (negação do ambiente + efeito ausente), não como bug misterioso.
 
 **Todo gatilho vira pendência documental imediata.** Como a base está fora do repositório, o diff do PR não prova sua atualização. Registre em `docs/pendencias-obsidian.md` a origem, o destino, o responsável e o prazo máximo aplicável; sincronize antes se o usuário pedir. A nota só é declarada sincronizada depois de escrita e conferida. A base anterior não pode ser apresentada como atualizada enquanto houver pendência; divergência não é resolvida silenciosamente.
 

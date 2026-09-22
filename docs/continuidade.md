@@ -1,25 +1,36 @@
 ## Task ativa
 
-Lote 1 de 4 do desafio MAPS: estabelecer governança, registrar a stack e criar a fundação Maven/SQLite, sem implementar domínio, casos de uso, REST ou frontend.
+Corrigir o contrato de despacho do Severino na branch `docs/correcao-contrato-semeadura-20260921`.
+O escopo está fechado a `docs/agentes/severino.md` e este arquivo; não declarar raiz de produto,
+não criar `minerva-contabil` e não fazer push, merge ou aprovação.
 
 ## Estado atual
 
-Repositório novo em `main`, com a camada de governança derivada do template autorizado. A aplicação será construída nos lotes seguintes com Java 25, Spring Boot, Maven, SQLite embarcado e React.
+Alterações aplicadas somente nos dois arquivos permitidos e commitadas na branch. O bloco Bash passa
+em `bash -n`; a recusa por raiz com newline termina com `EXIT_CODE_CODEX=2` na saída específica do
+despacho.
 
 ## Decisões vigentes
 
-O lote 1 preserva somente governança, ADR de stack, esqueleto Maven, configuração SQLite, schema inicial e teste mínimo de contexto. A ADR-001 registra as decisões tecnológicas já tomadas.
+Estado: `raizes_semeadura` continua vazio e, nesse estado, `raizes` conserva byte a byte as duas
+raízes permanentes. O contrato agora exige `SEVERINO_DESPACHO_ID`, cria a saída específica antes
+das guardas, registra recusas com sentinela final `EXIT_CODE_CODEX=2`, rejeita newline/`..` antes
+do `grep`, usa `git init -q --template=''` com rc verificado e documenta a ressalva de filesystem
+na auto-revogação. A revisão independente do Neo foi registrada no histórico de Severino.
 
 ## Riscos e lacunas
 
-❓ LACUNA: a sincronização das pendências desta aplicação com a base Obsidian ainda precisa ser conferida. A pasta `.codex/` existente no ambiente está somente leitura e não pôde receber a cópia do template.
+O bind `ro` aninhado de `$raiz_destino/.git` fora do workspace continua não medido; a primeira
+semeadura deve conferir `/proc/self/mountinfo` ou um `git commit` com rc 0. A auto-revogação também
+depende de o filesystem permitir observar existência e conteúdo; erro de leitura não prova vazio.
 
 ## Próximo passo
 
-Concluir a ADR e o esqueleto Maven/SQLite, executar os gates e registrar os três commits solicitados, mantendo o domínio para os lotes 2–4.
+Próximo passo: comentar no PR #7 as correções e evidências, sem aprovar nem fazer merge; aguardar a
+rerrevisão do Neo.
 
 ## Região gerada
 
 <!-- minerva-continuity:generated:start -->
-Estado gerado para sincronização: lote 1 de governança e fundação da aplicação Minerva Finanças em andamento.
+Estado gerado: correção do contrato de despacho do Severino commitada e aguardando rerrevisão do Neo.
 <!-- minerva-continuity:generated:end -->
